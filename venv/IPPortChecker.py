@@ -4,6 +4,7 @@ import time
 from tkinter import *
 from tkinter import messagebox, font
 
+
 class GivenInfoFromFile():
     IPValue = ""
     PortValue = 0
@@ -23,6 +24,7 @@ class IpCheckerInterface(Frame):
         self.master.geometry("260x160")
         self.master.configure(bg="#2A2A2E")
         self.master.resizable(0, 0)
+        self.master.attributes("-topmost", True)
         frame.grid()
         fontForLabels = font.Font(family="Yu Gothic", size=12, weight='bold')
         emptyLabelFont = font.Font(size=4, weight='bold')
@@ -81,17 +83,27 @@ class IpCheckerInterface(Frame):
 
 
 def ScanFile():
-    with open("IPsAndPorts.txt", "r") as f:
-        for line in f:
-            wordNumber = 1
-            for word in line.split():
-                if wordNumber == 1:
-                    GivenInfoFromFile.IPValue = str(word)
-                    wordNumber+=1
-                else:
-                    GivenInfoFromFile.PortValue = int(word)
-                    writeToFile()
-    f.close()
+    with open("IPsAndPorts.txt", "r") as read:
+        with open("Results.txt", "a+") as save:
+            for line in read:
+                wordNumber = 1
+                for word in line.split():
+                    if wordNumber == 1:
+                        GivenInfoFromFile.IPValue = str(word)
+                        wordNumber+=1
+                    else:
+                        GivenInfoFromFile.PortValue = int(word)
+                        writeToFile(save)
+        save.close()
+    read.close()
+
+def writeToFile(save):
+    if CheckPort(GivenInfoFromFile.IPValue, GivenInfoFromFile.PortValue, GivenInfoFromFile.GivenByFileCheck) == 0:
+            save.write(textToWrite ("OPEN"))
+    elif CheckPort(GivenInfoFromFile.IPValue, GivenInfoFromFile.PortValue, GivenInfoFromFile.GivenByFileCheck) == 2:
+        save.write(textToWrite ("FAILED"))
+    else:
+        save.write(textToWrite ("CLOSED"))
 
 def CheckPort(IPAddress, Port, Check):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -111,16 +123,6 @@ def CheckPort(IPAddress, Port, Check):
 
 def textToWrite (status):
     return "%s : %s %s \n" %(GivenInfoFromFile.IPValue, GivenInfoFromFile.PortValue, status)
-
-def writeToFile():
-    f = open("Results.txt", "a+")
-    if CheckPort(GivenInfoFromFile.IPValue, GivenInfoFromFile.PortValue, GivenInfoFromFile.GivenByFileCheck) == 0:
-            f.write(textToWrite ("OPEN"))
-    elif CheckPort(GivenInfoFromFile.IPValue, GivenInfoFromFile.PortValue, GivenInfoFromFile.GivenByFileCheck) == 2:
-        f.write(textToWrite ("FAILED"))
-    else:
-        f.write(textToWrite ("CLOSED"))
-    f.close()
 
 def Gui():
     IpCheckerInterface().mainloop()
