@@ -1,5 +1,3 @@
-from builtins import print
-
 import pyautogui
 import socket
 import time
@@ -24,6 +22,7 @@ class IpCheckerInterface(Frame):
         self.master.title('Port Checker')
         self.master.geometry("260x160")
         self.master.configure(bg="#2A2A2E")
+        self.master.resizable(0, 0)
         frame.grid()
         fontForLabels = font.Font(family="Yu Gothic", size=12, weight='bold')
         emptyLabelFont = font.Font(size=4, weight='bold')
@@ -81,9 +80,8 @@ class IpCheckerInterface(Frame):
         self.ScanFileButton.grid(row=4, column=0, columnspan=2)
 
 
-
 def ScanFile():
-    with open("IPs.txt", "r") as f:
+    with open("IPsAndPorts.txt", "r") as f:
         for line in f:
             wordNumber = 1
             for word in line.split():
@@ -104,7 +102,10 @@ def CheckPort(IPAddress, Port, Check):
         return result_of_check
     except:
         if Check == 1:
-            messagebox.showerror("Error", "Failed to find IP/URL with given port")
+            if Port < 0 or Port > 65535:
+                messagebox.showerror("Error", "Port is out of range (0 to 65535)")
+            else:
+                messagebox.showerror("Error", "Failed to find IP/URL with given port")
         else:
             return Check
 
@@ -112,14 +113,14 @@ def textToWrite (status):
     return "%s : %s %s \n" %(GivenInfoFromFile.IPValue, GivenInfoFromFile.PortValue, status)
 
 def writeToFile():
-    save_file = open("save.txt", "a+")
+    f = open("Results.txt", "a+")
     if CheckPort(GivenInfoFromFile.IPValue, GivenInfoFromFile.PortValue, GivenInfoFromFile.GivenByFileCheck) == 0:
-            save_file.write(textToWrite ("OPEN"))
+            f.write(textToWrite ("OPEN"))
     elif CheckPort(GivenInfoFromFile.IPValue, GivenInfoFromFile.PortValue, GivenInfoFromFile.GivenByFileCheck) == 2:
-        save_file.write(textToWrite ("FAILED"))
+        f.write(textToWrite ("FAILED"))
     else:
-        save_file.write(textToWrite ("CLOSED"))
-    save_file.close()
+        f.write(textToWrite ("CLOSED"))
+    f.close()
 
 def Gui():
     IpCheckerInterface().mainloop()
