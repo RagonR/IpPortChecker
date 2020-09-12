@@ -112,7 +112,7 @@ def CheckPort(IPAddress, Port, Check):
         else:
             return False
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(0.2)
+    s.settimeout(0.4)
     location = (IPAddress, Port)
     try:
         result_of_check = s.connect_ex(location)
