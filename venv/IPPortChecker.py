@@ -4,17 +4,11 @@ import time
 from tkinter import *
 from tkinter import messagebox, font
 
-
-class GivenInfoFromFile():
+class dataStore():
     IPValue = ""
     PortValue = 0
     GivenByFileCheck = 2
-
-class GivenInfoInGui():
-    IPValue = ""
-    PortValue = 0
     GivenByGuiCheck = 1
-
 
 class IpCheckerInterface(Frame):
     def __init__(self):
@@ -47,9 +41,9 @@ class IpCheckerInterface(Frame):
         # Button to check
         def clickStart(event):
             try:
-                GivenInfoInGui.PortValue = int(self.PortEntry.get())
-                GivenInfoInGui.IPValue = self.IPEntry.get()
-                if GivenInfoInGui.IPValue == '':
+                dataStore.PortValue = int(self.PortEntry.get())
+                dataStore.IPValue = self.IPEntry.get()
+                if dataStore.IPValue == '':
                     messagebox.showerror("Error", "IP entry is empty")
                 else:
                     number = 0
@@ -66,11 +60,15 @@ class IpCheckerInterface(Frame):
                 self.checkResultLaber.destroy()
             except:
                 pass
-            if CheckPort(GivenInfoInGui.IPValue, GivenInfoInGui.PortValue, GivenInfoInGui.GivenByGuiCheck) == 0:
-                self.checkResultLaber = Label(frame, text="%s is Open" % GivenInfoInGui.PortValue, bg="#2A2A2E", fg="#00ff00", font=fontForScanner)
+            result = CheckPort(dataStore.IPValue, dataStore.PortValue, dataStore.GivenByGuiCheck)
+            print(result)
+            if result == 0:
+                self.checkResultLaber = Label(frame, text="%s is Open" % dataStore.PortValue, bg="#2A2A2E", fg="#00ff00", font=fontForScanner)
                 self.checkResultLaber.grid(row=3, column=0, columnspan=2)
+            elif result == False:
+                pass
             else:
-                self.checkResultLaber = Label(frame, text="%s is Closed" % GivenInfoInGui.PortValue, bg="#2A2A2E", fg="#e60000", font=fontForScanner)
+                self.checkResultLaber = Label(frame, text="%s is Closed" % dataStore.PortValue, bg="#2A2A2E", fg="#e60000", font=fontForScanner)
                 self.checkResultLaber.grid(row=3, column=0, columnspan=2)
 
         #button for reading file
@@ -89,40 +87,45 @@ def ScanFile():
                 wordNumber = 1
                 for word in line.split():
                     if wordNumber == 1:
-                        GivenInfoFromFile.IPValue = str(word)
+                        dataStore.IPValue = str(word)
                         wordNumber+=1
                     else:
-                        GivenInfoFromFile.PortValue = int(word)
+                        dataStore.PortValue = int(word)
                         writeToFile(save)
         save.close()
     read.close()
 
 def writeToFile(save):
-    if CheckPort(GivenInfoFromFile.IPValue, GivenInfoFromFile.PortValue, GivenInfoFromFile.GivenByFileCheck) == 0:
+    result = CheckPort(dataStore.IPValue, dataStore.PortValue, dataStore.GivenByFileCheck)
+    if result == 0:
             save.write(textToWrite ("OPEN"))
-    elif CheckPort(GivenInfoFromFile.IPValue, GivenInfoFromFile.PortValue, GivenInfoFromFile.GivenByFileCheck) == 2:
+    elif result == False:
         save.write(textToWrite ("FAILED"))
     else:
         save.write(textToWrite ("CLOSED"))
 
 def CheckPort(IPAddress, Port, Check):
+    if Port < 0 or Port > 65535:
+        if Check == 1:
+            messagebox.showerror("Error", "Port is out of range (0 to 65535)")
+            return False
+        else:
+            return False
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(0.5)
+    s.settimeout(0.2)
     location = (IPAddress, Port)
     try:
         result_of_check = s.connect_ex(location)
         return result_of_check
     except:
         if Check == 1:
-            if Port < 0 or Port > 65535:
-                messagebox.showerror("Error", "Port is out of range (0 to 65535)")
-            else:
-                messagebox.showerror("Error", "Failed to find IP/URL with given port")
+            messagebox.showerror("Error", "Failed to find IP/URL with given port")
+            return False
         else:
-            return Check
+            return False
 
 def textToWrite (status):
-    return "%s : %s %s \n" %(GivenInfoFromFile.IPValue, GivenInfoFromFile.PortValue, status)
+    return "%s : %s %s \n" %(dataStore.IPValue, dataStore.PortValue, status)
 
 def Gui():
     IpCheckerInterface().mainloop()
