@@ -81,19 +81,24 @@ class IpCheckerInterface(Frame):
 
 
 def ScanFile():
-    with open("IPsAndPorts.txt", "r") as read:
-        with open("Results.txt", "a+") as save:
-            for line in read:
-                wordNumber = 1
-                for word in line.split():
-                    if wordNumber == 1:
-                        dataStorage.IPValue = str(word)
-                        wordNumber+=1
-                    else:
-                        dataStorage.PortValue = int(word)
-                        writeToFile(save)
-        save.close()
-    read.close()
+    try:
+        with open("IPsAndPorts.txt", "r") as read:
+            with open("Results.txt", "a+") as save:
+                for line in read:
+                    wordNumber = 1
+                    for word in line.split():
+                        if wordNumber == 1:
+                            dataStorage.IPValue = str(word)
+                            wordNumber += 1
+                        else:
+                            dataStorage.PortValue = int(word)
+                            writeToFile(save)
+            save.close()
+        read.close()
+        messagebox.showinfo("Successful", "The results are saved in a Results.txt")
+    except:
+        messagebox.showerror("Error", "IPsAndPorts.txt file does not exsit")
+
 
 def writeToFile(save):
     result = CheckPort(dataStorage.IPValue, dataStorage.PortValue, dataStorage.GivenByFileCheck)
