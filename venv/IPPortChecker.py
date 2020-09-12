@@ -65,7 +65,7 @@ class IpCheckerInterface(Frame):
             if result == 0:
                 self.checkResultLaber = Label(frame, text="%s is Open" % dataStorage.PortValue, bg="#2A2A2E", fg="#00ff00", font=fontForScanner)
                 self.checkResultLaber.grid(row=3, column=0, columnspan=2)
-            elif result == False:
+            elif result == -2:
                 pass
             else:
                 self.checkResultLaber = Label(frame, text="%s is Closed" % dataStorage.PortValue, bg="#2A2A2E", fg="#e60000", font=fontForScanner)
@@ -99,7 +99,7 @@ def writeToFile(save):
     result = CheckPort(dataStorage.IPValue, dataStorage.PortValue, dataStorage.GivenByFileCheck)
     if result == 0:
             save.write(textToWrite ("OPEN"))
-    elif result == False:
+    elif result == -2:
         save.write(textToWrite ("FAILED"))
     else:
         save.write(textToWrite ("CLOSED"))
@@ -108,9 +108,9 @@ def CheckPort(IPAddress, Port, Check):
     if Port < 0 or Port > 65535:
         if Check == 1:
             messagebox.showerror("Error", "Port is out of range (0 to 65535)")
-            return False
+            return -2
         else:
-            return False
+            return -2
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(0.4)
     location = (IPAddress, Port)
@@ -120,9 +120,9 @@ def CheckPort(IPAddress, Port, Check):
     except:
         if Check == 1:
             messagebox.showerror("Error", "Failed to find IP/URL with given port")
-            return False
+            return -2
         else:
-            return False
+            return -2
 
 def textToWrite (status):
     return "%s : %s %s \n" %(dataStorage.IPValue, dataStorage.PortValue, status)
