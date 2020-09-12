@@ -4,7 +4,7 @@ import time
 from tkinter import *
 from tkinter import messagebox, font
 
-class dataStore():
+class dataStorage():
     IPValue = ""
     PortValue = 0
     GivenByFileCheck = 2
@@ -41,9 +41,9 @@ class IpCheckerInterface(Frame):
         # Button to check
         def clickStart(event):
             try:
-                dataStore.PortValue = int(self.PortEntry.get())
-                dataStore.IPValue = self.IPEntry.get()
-                if dataStore.IPValue == '':
+                dataStorage.PortValue = int(self.PortEntry.get())
+                dataStorage.IPValue = self.IPEntry.get()
+                if dataStorage.IPValue == '':
                     messagebox.showerror("Error", "IP entry is empty")
                 else:
                     number = 0
@@ -60,15 +60,15 @@ class IpCheckerInterface(Frame):
                 self.checkResultLaber.destroy()
             except:
                 pass
-            result = CheckPort(dataStore.IPValue, dataStore.PortValue, dataStore.GivenByGuiCheck)
+            result = CheckPort(dataStorage.IPValue, dataStorage.PortValue, dataStorage.GivenByGuiCheck)
             print(result)
             if result == 0:
-                self.checkResultLaber = Label(frame, text="%s is Open" % dataStore.PortValue, bg="#2A2A2E", fg="#00ff00", font=fontForScanner)
+                self.checkResultLaber = Label(frame, text="%s is Open" % dataStorage.PortValue, bg="#2A2A2E", fg="#00ff00", font=fontForScanner)
                 self.checkResultLaber.grid(row=3, column=0, columnspan=2)
             elif result == False:
                 pass
             else:
-                self.checkResultLaber = Label(frame, text="%s is Closed" % dataStore.PortValue, bg="#2A2A2E", fg="#e60000", font=fontForScanner)
+                self.checkResultLaber = Label(frame, text="%s is Closed" % dataStorage.PortValue, bg="#2A2A2E", fg="#e60000", font=fontForScanner)
                 self.checkResultLaber.grid(row=3, column=0, columnspan=2)
 
         #button for reading file
@@ -87,16 +87,16 @@ def ScanFile():
                 wordNumber = 1
                 for word in line.split():
                     if wordNumber == 1:
-                        dataStore.IPValue = str(word)
+                        dataStorage.IPValue = str(word)
                         wordNumber+=1
                     else:
-                        dataStore.PortValue = int(word)
+                        dataStorage.PortValue = int(word)
                         writeToFile(save)
         save.close()
     read.close()
 
 def writeToFile(save):
-    result = CheckPort(dataStore.IPValue, dataStore.PortValue, dataStore.GivenByFileCheck)
+    result = CheckPort(dataStorage.IPValue, dataStorage.PortValue, dataStorage.GivenByFileCheck)
     if result == 0:
             save.write(textToWrite ("OPEN"))
     elif result == False:
@@ -125,7 +125,7 @@ def CheckPort(IPAddress, Port, Check):
             return False
 
 def textToWrite (status):
-    return "%s : %s %s \n" %(dataStore.IPValue, dataStore.PortValue, status)
+    return "%s : %s %s \n" %(dataStorage.IPValue, dataStorage.PortValue, status)
 
 def Gui():
     IpCheckerInterface().mainloop()
