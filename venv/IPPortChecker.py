@@ -15,7 +15,7 @@ class IpCheckerInterface(Frame):
         Frame.__init__(self)
         frame = Frame()
         self.master.title('Port Checker')
-        self.master.geometry("260x160")
+        self.master.geometry("280x160")
         self.master.configure(bg="#2A2A2E")
         self.master.resizable(0, 0)
         self.master.attributes("-topmost", True)
@@ -39,7 +39,7 @@ class IpCheckerInterface(Frame):
         self.PortEntry = Entry(frame, width=8, bg="white", font=fontForEntry)
         self.PortEntry.grid(row=2, column=1, sticky=SW)
         # Button to check
-        def clickStart(event):
+        def click_start(event):
             try:
                 dataStorage.PortValue = int(self.PortEntry.get())
                 dataStorage.IPValue = self.IPEntry.get()
@@ -47,15 +47,15 @@ class IpCheckerInterface(Frame):
                     messagebox.showerror("Error", "IP entry is empty")
                 else:
                     number = 0
-                    RunCheck()
+                    run_check()
             except ValueError:
                 messagebox.showerror("Error", "Port entry is empty")
 
         self.StartButton = Button(frame, text="Check", font=fontForLabels)
-        self.StartButton.bind("<ButtonRelease-1>", clickStart)
+        self.StartButton.bind("<ButtonRelease-1>", click_start)
         self.StartButton.grid(row=3, column=2)
 
-        def RunCheck():
+        def run_check():
             try:
                 self.checkResultLaber.destroy()
             except:
@@ -72,15 +72,15 @@ class IpCheckerInterface(Frame):
                 self.checkResultLaber.grid(row=3, column=0, columnspan=2)
 
         #button for reading file
-        def clickScanFromList(event):
-            ScanFile();
+        def click_scan_from_list(event):
+            scan_file();
 
         self.ScanFileButton = Button(frame, text="Scan from list", font=fontForLabels)
-        self.ScanFileButton.bind("<ButtonRelease-1>", clickScanFromList)
+        self.ScanFileButton.bind("<ButtonRelease-1>", click_scan_from_list)
         self.ScanFileButton.grid(row=4, column=0, columnspan=2)
 
 
-def ScanFile():
+def scan_file():
     try:
         with open("IPsAndPorts.txt", "r") as read:
             with open("Results.txt", "a+") as save:
@@ -100,7 +100,7 @@ def ScanFile():
         messagebox.showerror("Error", "IPsAndPorts.txt file does not exsit")
 
 
-def writeToFile(save):
+def write_to_file(save):
     result = CheckPort(dataStorage.IPValue, dataStorage.PortValue, dataStorage.GivenByFileCheck)
     if result == 0:
             save.write(textToWrite ("OPEN"))
@@ -109,7 +109,7 @@ def writeToFile(save):
     else:
         save.write(textToWrite ("CLOSED"))
 
-def CheckPort(IPAddress, Port, Check):
+def check_port(IPAddress, Port, Check):
     if Port < 0 or Port > 65535:
         if Check == 1:
             messagebox.showerror("Error", "Port is out of range (0 to 65535)")
@@ -129,13 +129,13 @@ def CheckPort(IPAddress, Port, Check):
         else:
             return -2
 
-def textToWrite (status):
+def text_to_write (status):
     return "%s : %s %s \n" %(dataStorage.IPValue, dataStorage.PortValue, status)
 
-def Gui():
+def gui():
     IpCheckerInterface().mainloop()
 
 def main():
-    Gui()
+    gui()
 
 main()
