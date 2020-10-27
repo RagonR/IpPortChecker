@@ -60,7 +60,7 @@ class IpCheckerInterface(Frame):
                 self.checkResultLaber.destroy()
             except:
                 pass
-            result = CheckPort(dataStorage.IPValue, dataStorage.PortValue, dataStorage.GivenByGuiCheck)
+            result = check_port(dataStorage.IPValue, dataStorage.PortValue, dataStorage.GivenByGuiCheck)
             print(result)
             if result == 0:
                 self.checkResultLaber = Label(frame, text="%s is Open" % dataStorage.PortValue, bg="#2A2A2E", fg="#00ff00", font=fontForScanner)
@@ -101,7 +101,7 @@ def scan_file():
 
 
 def write_to_file(save):
-    result = CheckPort(dataStorage.IPValue, dataStorage.PortValue, dataStorage.GivenByFileCheck)
+    result = check_port(dataStorage.IPValue, dataStorage.PortValue, dataStorage.GivenByFileCheck)
     if result == 0:
             save.write(textToWrite ("OPEN"))
     elif result == -2:
